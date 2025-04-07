@@ -17,7 +17,7 @@ const Projects = () => {
       ],
       tags: ['FastAPI', 'AWS S3', 'MongoDB', 'AI Integration', 'Back-End Web Development'],
       links: {
-        github: 'https://github.com/dhruvbajaj/regulo-backend',
+        github: '#',
         live: '#'
       }
     },
@@ -31,7 +31,7 @@ const Projects = () => {
       ],
       tags: ['FastAPI', 'OAuth 2.0', 'JWT', 'Security', 'API Development'],
       links: {
-        github: 'https://github.com/dhruvbajaj/oauth2-server',
+        github: '#',
         live: '#'
       }
     },
@@ -46,10 +46,10 @@ const Projects = () => {
       ],
       tags: ['IoT', 'Raspberry Pi', 'GPS', 'AWS', 'WebSockets', 'Real-time Monitoring'],
       links: {
-        github: 'https://github.com/dhruvbajaj/iot-vehicle-monitoring',
+        github: '#',
         live: '#'
       },
-      images: ['/lovable-uploads/68cfd9bb-e081-490b-86ab-e205db322de0.png', '/lovable-uploads/74cc8d10-3615-43f0-bb13-74be665351c4.png']
+      images: []
     }
   ];
 

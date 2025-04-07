@@ -23,7 +23,7 @@ const Hero = () => {
             </p>
             <div className="flex flex-wrap gap-4">
               <Button asChild size="lg">
-                <a href="/resume.pdf" download>
+                <a href="Resume.pdf" download>
                   <Download className="mr-2 h-5 w-5" /> Download Resume
                 </a>
               </Button>

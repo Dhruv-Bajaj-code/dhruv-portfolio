@@ -43,10 +43,10 @@ const Header = () => {
           
           {/* Desktop Social Icons */}
           <div className="hidden md:flex items-center space-x-4">
-            <a href="https://github.com/dhruvbajaj" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+            <a href="https://github.com/Dhruv-Bajaj-code" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Github className="h-5 w-5" />
             </a>
-            <a href="https://linkedin.com/in/dhruvbajaj" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
+            <a href="https://www.linkedin.com/in/dhruv-bajaj-10ab42242/" target="_blank" rel="noopener noreferrer" className="text-muted-foreground hover:text-primary transition-colors">
               <Linkedin className="h-5 w-5" />
             </a>
             <a href="mailto:dhruvbajaj789@gmail.com" className="text-muted-foreground hover:text-primary transition-colors">
