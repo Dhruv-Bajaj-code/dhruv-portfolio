@@ -20,4 +20,4 @@ COPY . .
 EXPOSE 8080
 
 # Run the dev server
-CMD ["npm", "run", "dev"]
+CMD ["vite", "preview", "--host", "--port", "8080"]
