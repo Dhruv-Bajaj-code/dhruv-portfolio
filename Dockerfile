@@ -5,7 +5,7 @@ WORKDIR /app
 
 # Copy only necessary files for installation first for better caching
 COPY package*.json ./
-COPY bun.lockb ./   # keep this only if you're actually using bun
+COPY bun.lockb ./   
 RUN npm install      # or `bun install` if you're actually using bun
 
 # Copy the rest of your app
