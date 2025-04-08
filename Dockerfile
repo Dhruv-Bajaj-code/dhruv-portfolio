@@ -16,6 +16,8 @@ RUN npm install
 # Copy rest of the app
 COPY . .
 
+RUN npm install -g vite
+
 # Expose the dev server port
 EXPOSE 8080
 
