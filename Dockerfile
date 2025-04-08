@@ -1,25 +1,27 @@
-# Use the official Node.js image as the base
-FROM node:20
+# ----------- Stage 1: Build the app -----------
+FROM node:20 AS builder
 
-# Set the working directory inside the container
 WORKDIR /app
 
-# Copy package.json and lock file
+# Copy only necessary files for installation first for better caching
 COPY package*.json ./
-COPY bun.lockb ./ 
+COPY bun.lockb ./   # keep this only if you're actually using bun
+RUN npm install      # or `bun install` if you're actually using bun
 
-# Install dependencies
-RUN npm install
-# OR if using bun
-# RUN npm install -g bun && bun install
-
-# Copy rest of the app
+# Copy the rest of your app
 COPY . .
 
-RUN npm install -g vite
+# Build the Vite app
+RUN npm run build
 
-# Expose the dev server port
-EXPOSE 8080
+# ----------- Stage 2: Serve with Nginx -----------
+FROM nginx:alpine
 
-# Run the dev server
-CMD ["vite", "preview", "--host", "--port", "8080"]
+# Copy the built files to Nginx's public folder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Expose port 80 to the outside world
+EXPOSE 80
+
+# Start Nginx server
+CMD ["nginx", "-g", "daemon off;"]
