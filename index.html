@@ -1,24 +1,1259 @@
+
 <!DOCTYPE html>
 <html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>cyber-portfolio-90s</title>
-    <meta name="description" content="Lovable Generated Project" />
-    <meta name="author" content="Lovable" />
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dhruv Bajaj - Portfolio System</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=VT323:wght@400&family=Share+Tech+Mono:wght@400&display=swap" rel="stylesheet">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    <meta property="og:title" content="cyber-portfolio-90s" />
-    <meta property="og:description" content="Lovable Generated Project" />
-    <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+        :root {
+            --neon-green: #00ff00;
+            --cyan: #00ccff;
+            --orange: #ff9900;
+            --dark-bg: #1a1a1a;
+            --window-gray: #c0c0c0;
+            --window-gray-dark: #808080;
+            --terminal-bg: #000;
+        }
 
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
-  </head>
+        body {
+            font-family: 'VT323', monospace;
+            background: radial-gradient(circle at 30% 30%, #2c3e50 0%, #34495e 50%, #1a1a1a 100%);
+            color: var(--neon-green);
+            overflow: hidden;
+            height: 100vh;
+            cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="16" height="16"><polygon points="0,0 0,16 6,10 16,16 16,0" fill="white" stroke="black"/></svg>'), auto;
+        }
 
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+        /* CRT Effects */
+        .crt-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1000;
+            background: repeating-linear-gradient(
+                0deg,
+                transparent,
+                transparent 2px,
+                rgba(0, 255, 0, 0.03) 2px,
+                rgba(0, 255, 0, 0.03) 4px
+            );
+        }
+
+        .crt-flicker {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            animation: flicker 0.15s infinite linear alternate;
+        }
+
+        @keyframes flicker {
+            0% { opacity: 1; }
+            100% { opacity: 0.98; }
+        }
+
+        /* Matrix Background */
+        #matrix-canvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .status-bar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 25px;
+            background: linear-gradient(to bottom, var(--window-gray) 0%, var(--window-gray-dark) 100%);
+            border-bottom: 1px solid #fff;
+            display: flex;
+            align-items: center;
+            padding: 0 10px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 11px;
+            color: #000;
+            z-index: 100;
+            text-shadow: 1px 1px 0 rgba(255,255,255,0.5);
+        }
+
+        .desktop {
+            position: fixed;
+            top: 25px;
+            left: 0;
+            right: 0;
+            bottom: 40px;
+            display: flex;
+            flex-direction: column;
+            align-items: flex-start;
+            padding: 20px;
+            gap: 15px;
+        }
+
+        .desktop-icon {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 80px;
+            cursor: pointer;
+            transition: transform 0.2s;
+        }
+
+        .desktop-icon:hover {
+            transform: scale(1.1);
+        }
+
+        .desktop-icon:active {
+            transform: scale(0.95);
+        }
+
+        .icon-image {
+            width: 32px;
+            height: 32px;
+            background: var(--neon-green);
+            border: 2px solid #000;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 18px;
+            margin-bottom: 5px;
+        }
+
+        .icon-label {
+            font-size: 12px;
+            color: #fff;
+            text-align: center;
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+            word-wrap: break-word;
+        }
+
+        .taskbar {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            height: 40px;
+            background: linear-gradient(to bottom, var(--window-gray) 0%, var(--window-gray-dark) 100%);
+            border-top: 1px solid #fff;
+            box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+            z-index: 100;
+        }
+
+        .start-button {
+            background: linear-gradient(to bottom, #ddd 0%, #bbb 100%);
+            border: 2px outset #ccc;
+            padding: 8px 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: #000;
+            cursor: pointer;
+            margin-right: 10px;
+        }
+
+        .start-button:active {
+            border: 2px inset #ccc;
+        }
+
+        .taskbar-buttons {
+            display: flex;
+            gap: 5px;
+            flex: 1;
+        }
+
+        .taskbar-button {
+            background: linear-gradient(to bottom, #ddd 0%, #bbb 100%);
+            border: 2px outset #ccc;
+            padding: 8px 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: var(--neon-green);
+            cursor: pointer;
+            max-width: 150px;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+
+        .taskbar-button.active {
+            background: linear-gradient(to bottom, var(--neon-green) 0%, #00cc00 100%);
+            color: #000;
+            border: 2px inset #00cc00;
+        }
+
+        .taskbar-clock {
+            background: linear-gradient(to bottom, #ddd 0%, #bbb 100%);
+            border: 2px inset #ccc;
+            padding: 8px 12px;
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 12px;
+            color: #000;
+        }
+
+        .window {
+            position: fixed;
+            background: var(--dark-bg);
+            border: 2px solid var(--neon-green);
+            box-shadow: 0 0 20px rgba(0, 255, 0, 0.5);
+            min-width: 600px;
+            min-height: 400px;
+            max-width: 90vw;
+            max-height: 80vh;
+            display: none;
+            z-index: 50;
+        }
+
+        .window.active {
+            display: block;
+            z-index: 60;
+        }
+
+        .window-header {
+            background: linear-gradient(to bottom, var(--neon-green) 0%, #00cc00 100%);
+            padding: 5px 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            cursor: move;
+        }
+
+        .window-title {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            font-weight: bold;
+            color: #000;
+        }
+
+        .window-controls {
+            display: flex;
+            gap: 3px;
+        }
+
+        .window-control {
+            width: 16px;
+            height: 16px;
+            border: 1px solid #000;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: bold;
+        }
+
+        .minimize { background: #ffff00; }
+        .maximize { background: #00ff00; }
+        .close { background: #ff0000; }
+
+        .window-content {
+            padding: 20px;
+            height: calc(100% - 40px);
+            overflow-y: auto;
+            scrollbar-width: thin;
+            scrollbar-color: var(--neon-green) var(--dark-bg);
+        }
+
+        .window-content::-webkit-scrollbar {
+            width: 12px;
+        }
+
+        .window-content::-webkit-scrollbar-track {
+            background: var(--dark-bg);
+        }
+
+        .window-content::-webkit-scrollbar-thumb {
+            background: var(--neon-green);
+            border-radius: 0;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 5px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .nav-button {
+            background: linear-gradient(to bottom, #444 0%, #222 100%);
+            border: 2px outset #555;
+            padding: 8px 12px;
+            font-family: 'VT323', monospace;
+            font-size: 12px;
+            color: var(--neon-green);
+            cursor: pointer;
+            text-transform: uppercase;
+            transition: box-shadow 0.2s;
+        }
+
+        .nav-button:hover {
+            box-shadow: 0 0 8px rgba(0, 255, 0, 0.3);
+        }
+
+        .nav-button:active {
+            border: 2px inset #555;
+        }
+
+        .nav-button.active {
+            background: linear-gradient(to bottom, var(--neon-green) 0%, #00cc00 100%);
+            color: #000;
+        }
+
+        .section-header {
+            color: var(--cyan);
+            font-size: 18px;
+            margin-bottom: 15px;
+            text-shadow: 0 0 10px rgba(0, 204, 255, 0.5);
+        }
+
+        .ascii-art {
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            line-height: 1.2;
+            margin-bottom: 20px;
+            text-align: center;
+            color: var(--neon-green);
+        }
+
+        .terminal-container {
+            background: var(--terminal-bg);
+            border: 2px solid var(--neon-green);
+            padding: 15px;
+            margin: 20px 0;
+            font-family: 'Share Tech Mono', monospace;
+        }
+
+        .terminal-output {
+            min-height: 150px;
+            max-height: 300px;
+            overflow-y: auto;
+            margin-bottom: 10px;
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        .terminal-prompt {
+            color: var(--neon-green);
+        }
+
+        .terminal-input {
+            display: flex;
+            align-items: center;
+        }
+
+        .terminal-input input {
+            background: transparent;
+            border: none;
+            color: var(--neon-green);
+            font-family: 'Share Tech Mono', monospace;
+            font-size: 14px;
+            outline: none;
+            flex: 1;
+            margin-left: 5px;
+        }
+
+        .loading-bar {
+            background: var(--terminal-bg);
+            border: 2px solid var(--neon-green);
+            height: 30px;
+            margin: 20px 0;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .loading-fill {
+            height: 100%;
+            background: linear-gradient(to right, var(--neon-green) 0%, var(--cyan) 100%);
+            width: 0%;
+            animation: loading 3s ease-in-out forwards;
+        }
+
+        @keyframes loading {
+            to { width: 100%; }
+        }
+
+        .content-section {
+            margin-bottom: 30px;
+        }
+
+        .experience-item, .project-item {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--cyan);
+            padding: 15px;
+            margin-bottom: 15px;
+            transition: all 0.3s;
+        }
+
+        .experience-item:hover, .project-item:hover {
+            box-shadow: 0 0 15px rgba(0, 204, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .company-name, .project-title {
+            color: var(--orange);
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .job-title, .project-subtitle {
+            color: var(--cyan);
+            font-size: 14px;
+            margin-bottom: 5px;
+        }
+
+        .date {
+            color: #888;
+            font-size: 12px;
+            margin-bottom: 10px;
+        }
+
+        .achievement {
+            margin-bottom: 5px;
+            padding-left: 15px;
+            position: relative;
+        }
+
+        .achievement::before {
+            content: "▶";
+            color: var(--neon-green);
+            position: absolute;
+            left: 0;
+        }
+
+        .skills-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .skill-category {
+            background: rgba(0, 0, 0, 0.8);
+            border: 1px solid var(--cyan);
+            padding: 15px;
+        }
+
+        .skill-category h3 {
+            color: var(--cyan);
+            margin-bottom: 10px;
+            font-size: 16px;
+        }
+
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-top: 15px;
+        }
+
+        .contact-item {
+            background: rgba(0, 255, 0, 0.1);
+            border: 1px solid var(--neon-green);
+            padding: 15px;
+            text-align: center;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .contact-item:hover {
+            box-shadow: 0 0 15px rgba(0, 255, 0, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .award-badge {
+            background: linear-gradient(45deg, #ff6b6b, #4ecdc4);
+            color: #000;
+            padding: 10px 15px;
+            margin: 10px 0;
+            border-radius: 5px;
+            font-weight: bold;
+            text-align: center;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .glitch {
+            animation: glitch 0.3s;
+        }
+
+        @keyframes glitch {
+            0%, 100% { transform: translate(0); }
+            20% { transform: translate(-2px, 2px); }
+            40% { transform: translate(-2px, -2px); }
+            60% { transform: translate(2px, 2px); }
+            80% { transform: translate(2px, -2px); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .window {
+                min-width: calc(100vw - 20px);
+                left: 10px !important;
+                top: 35px !important;
+                width: calc(100vw - 20px) !important;
+                height: calc(100vh - 85px) !important;
+            }
+
+            .window-content {
+                padding: 10px;
+            }
+
+            .desktop {
+                flex-direction: row;
+                justify-content: center;
+                align-items: flex-start;
+                flex-wrap: wrap;
+                gap: 10px;
+                padding: 10px;
+            }
+
+            .desktop-icon {
+                width: 60px;
+            }
+
+            .icon-image {
+                width: 24px;
+                height: 24px;
+                font-size: 14px;
+            }
+
+            .icon-label {
+                font-size: 10px;
+            }
+
+            .taskbar {
+                height: 30px;
+                padding: 0 3px;
+            }
+
+            .taskbar-button, .start-button, .taskbar-clock {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+
+            .nav-buttons {
+                gap: 3px;
+            }
+
+            .nav-button {
+                padding: 6px 8px;
+                font-size: 10px;
+            }
+
+            .skills-grid, .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- CRT Effects -->
+    <div class="crt-flicker"></div>
+    <div class="crt-overlay"></div>
+    
+    <!-- Matrix Background -->
+    <canvas id="matrix-canvas"></canvas>
+
+    <!-- Status Bar -->
+    <div class="status-bar">
+        <span>Dhruv Bajaj Portfolio System | Status: Online | Memory: 640K | CPU: 100% | <span id="current-time"></span></span>
+    </div>
+
+    <!-- Desktop -->
+    <div class="desktop" id="desktop">
+        <!-- Desktop icons will be populated by JavaScript -->
+    </div>
+
+    <!-- Taskbar -->
+    <div class="taskbar">
+        <button class="start-button" onclick="showStart()">Start</button>
+        <div class="taskbar-buttons" id="taskbar-buttons">
+            <!-- Taskbar buttons will be populated by JavaScript -->
+        </div>
+        <div class="taskbar-clock" id="taskbar-clock"></div>
+    </div>
+
+    <!-- Windows -->
+    <div class="window active" id="about-window" style="left: 100px; top: 60px; width: 700px; height: 500px;">
+        <div class="window-header">
+            <span class="window-title">About.exe</span>
+            <div class="window-controls">
+                <div class="window-control minimize" onclick="minimizeWindow('about-window')">-</div>
+                <div class="window-control maximize" onclick="maximizeWindow('about-window')">□</div>
+                <div class="window-control close" onclick="closeWindow('about-window')">&times;</div>
+            </div>
+        </div>
+        <div class="window-content">
+            <div class="nav-buttons">
+                <button class="nav-button active" onclick="switchSection('about')">About</button>
+                <button class="nav-button" onclick="switchSection('experience')">Experience</button>
+                <button class="nav-button" onclick="switchSection('projects')">Projects</button>
+                <button class="nav-button" onclick="switchSection('skills')">Skills</button>
+                <button class="nav-button" onclick="switchSection('contact')">Contact</button>
+                <button class="nav-button" onclick="switchSection('awards')">Awards</button>
+            </div>
+
+            <div id="about-content">
+                <div class="ascii-art">
+╔═══════════════════════════════════════╗
+║        DHRUV BAJAJ - PORTFOLIO        ║
+║     FULL-STACK DEVELOPER SYSTEM       ║
+╚═══════════════════════════════════════╝
+                </div>
+
+                <div class="loading-bar">
+                    <div class="loading-fill"></div>
+                </div>
+
+                <div class="section-header">&gt;&gt;&gt; SYSTEM.INFO</div>
+                <div class="content-section">
+                    <div class="terminal-prompt">&gt; whoami</div>
+                    <p>Dhruv Bajaj - Full-Stack Developer specializing in scalable web applications, cloud architecture, and IoT systems. Currently pursuing B.Tech in Computer Science and Engineering at VIT Vellore with expertise in Python, JavaScript, AWS, and modern frameworks.</p>
+                    
+                    <div class="terminal-prompt">&gt; system_status</div>
+                    <p>▶ Status: Available for opportunities<br>
+                    ▶ Location: India<br>
+                    ▶ Experience: 3+ years in development<br>
+                    ▶ Specialization: Backend systems, Cloud architecture, IoT integration</p>
+                </div>
+
+                <div class="section-header">&gt;&gt;&gt; EDUCATION.EXE</div>
+                <div class="content-section">
+                    <div class="experience-item">
+                        <div class="company-name">Vellore Institute of Technology (VIT), Vellore</div>
+                        <div class="job-title">B.Tech in Computer Science and Engineering</div>
+                        <div class="date">2021 – 2025</div>
+                        <div class="achievement">CGPA: 8.17 / 10</div>
+                        <div class="achievement">Relevant Coursework: Data Structures, Algorithms, Cloud Computing, IoT</div>
+                    </div>
+                </div>
+
+                <div class="terminal-container">
+                    <div class="terminal-output" id="terminal-output">
+                        <div class="terminal-prompt">System initialized. Type 'help' for available commands.</div>
+                    </div>
+                    <div class="terminal-input">
+                        <span class="terminal-prompt">&gt;</span>
+                        <input type="text" id="terminal-input" placeholder="Enter command..." onkeypress="handleTerminalInput(event)">
+                    </div>
+                </div>
+            </div>
+
+            <div id="experience-content" style="display: none;">
+                <div class="section-header">&gt;&gt;&gt; EXPERIENCE.LOG</div>
+                
+                <div class="experience-item">
+                    <div class="company-name">BIGTALK Technologies and Services Pvt. Ltd.</div>
+                    <div class="job-title">Software Development Intern</div>
+                    <div class="date">August 2023 – November 2023</div>
+                    <div class="achievement">Engineered an IoT-powered vehicle monitoring system using Raspberry Pi and GPS to track vehicle parameters (speed, fuel) and driver behavior in real time</div>
+                    <div class="achievement">Integrated a dual-camera setup with pre-existing AI models for detecting driver drowsiness, mobile phone usage, and smoking, achieving high accuracy in behavior analysis</div>
+                    <div class="achievement">Developed Python scripts for data collection and utilized WebSockets for low-latency data streaming to a central server, ensuring seamless real-time updates</div>
+                    <div class="achievement">Leveraged AWS (S3, EC2) for scalable cloud storage and processing, optimizing data handling for vehicle and camera feeds</div>
+                    <div class="achievement">Collaborated with hardware and software teams to ensure robust integration of Raspberry Pi devices with Linux-based OS and network configurations</div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="company-name">Regulo Technologies (Client Project via BIGTALK)</div>
+                    <div class="job-title">Software Developer</div>
+                    <div class="achievement">Developed a scalable FastAPI-based backend for Regulo's AI-driven website, processing user-uploaded facial images for real-time analysis of tiredness and distraction</div>
+                    <div class="achievement">Integrated pre-built AI models with the backend, collaborating with Regulo's AI team to ensure seamless communication between frontend and backend modules</div>
+                    <div class="achievement">Architected modular backend components for user authentication, image processing, and data storage, enhancing system maintainability and scalability</div>
+                    <div class="achievement">Utilized AWS S3 for cloud storage of uploaded images and MongoDB for flexible, high-performance data management, optimizing query efficiency</div>
+                    <div class="achievement">Implemented RESTful APIs with JWT and OAuth 2.0 for secure endpoint access, ensuring robust user authentication and data privacy</div>
+                </div>
+
+                <div class="experience-item">
+                    <div class="company-name">Jansethu Solutions (Client Project via BIGTALK)</div>
+                    <div class="job-title">Software Developer</div>
+                    <div class="achievement">Designed and developed a full-stack web application for data management, featuring interactive forms for users to create, update, and delete data entries</div>
+                    <div class="achievement">Built the frontend using AngularJS and Bootstrap, creating dynamic, responsive interfaces with smooth navigation and user-friendly interactions</div>
+                    <div class="achievement">Developed the backend with Django, implementing RESTful APIs and CORS for secure cross-domain communication between frontend and backend</div>
+                    <div class="achievement">Managed database operations with Microsoft SQL Server, designing efficient schemas and optimizing complex queries for high-performance data retrieval</div>
+                    <div class="achievement">Overcame challenges in AngularJS routing and Django-MSSQL integration, enhancing skills in full-stack development and cross-technology troubleshooting</div>
+                </div>
+            </div>
+
+            <div id="projects-content" style="display: none;">
+                <div class="section-header">&gt;&gt;&gt; PROJECTS.DIR</div>
+                
+                <div class="project-item">
+                    <div class="project-title">OAuth 2.0 Authentication & Resource Server</div>
+                    <div class="project-subtitle">Custom OAuth 2.0 system implementation (rebuilt using Node.js and Express)</div>
+                    <div class="achievement">Re-engineered a custom OAuth 2.0 system using Node.js and Express to manage secure token-based access</div>
+                    <div class="achievement">Implemented authorization code flow, token issuance, and secure storage with JWTs</div>
+                    <div class="achievement">Ensured modular separation between Authorization and Resource servers for scalability and maintainability</div>
+                    <p style="margin-top: 10px; color: var(--cyan);">🔗 <a href="#" style="color: var(--cyan);">Medium Article</a> | <a href="#" style="color: var(--cyan);">Code Repository</a></p>
+                </div>
+
+                <div class="project-item">
+                    <div class="project-title">SystemDesign.GoogleDrive – Distributed File Management System</div>
+                    <div class="project-subtitle">End-to-end cloud storage architecture with intelligent caching, search, and local cloud simulation</div>
+                    <div class="achievement">Architected a production-grade file management system with real-time file operations, advanced search, and metadata indexing</div>
+                    <div class="achievement">Developed a FastAPI backend with Redis-based caching, PostgreSQL for persistent storage, and full-text indexing for fast search</div>
+                    <div class="achievement">Built a React.js frontend using React Query for cache persistence, background refetch, and optimistic UI updates</div>
+                    <div class="achievement">Implemented WebSockets for real-time sync of file lists and status across clients without page refresh</div>
+                    <div class="achievement">Provisioned a local cloud environment using Docker Compose with services for frontend, backend, Redis, PostgreSQL, and MinIO (S3 emulator) with fine-grained access control</div>
+                    <div class="achievement">Designed the system for modular scaling, secure data access, and real-world deployment simulation under isolated containers</div>
+                </div>
+            </div>
+
+            <div id="skills-content" style="display: none;">
+                <div class="section-header">&gt;&gt;&gt; SKILLS.EXE</div>
+                
+                <div class="skills-grid">
+                    <div class="skill-category">
+                        <h3>Programming Languages</h3>
+                        <div class="terminal-prompt">&gt; languages --list</div>
+                        <p>Python, JavaScript (Node.js), Java, SQL, Go</p>
+                    </div>
+                    
+                    <div class="skill-category">
+                        <h3>Backend Development</h3>
+                        <div class="terminal-prompt">&gt; backend --frameworks</div>
+                        <p>FastAPI, Django, Express.js, REST APIs, WebSockets</p>
+                    </div>
+                    
+                    <div class="skill-category">
+                        <h3>Frontend Development</h3>
+                        <div class="terminal-prompt">&gt; frontend --list</div>
+                        <p>React.js, AngularJS</p>
+                    </div>
+                    
+                    <div class="skill-category">
+                        <h3>Databases</h3>
+                        <div class="terminal-prompt">&gt; databases --show</div>
+                        <p>MySQL, PostgreSQL, SQLite, MongoDB, DynamoDB, Redis</p>
+                    </div>
+                    
+                    <div class="skill-category">
+                        <h3>Cloud & DevOps</h3>
+                        <div class="terminal-prompt">&gt; cloud --services</div>
+                        <p>AWS (EC2, S3, Lambda, DynamoDB, IAM), Docker</p>
+                    </div>
+                </div>
+            </div>
+
+            <div id="contact-content" style="display: none;">
+                <div class="section-header">&gt;&gt;&gt; CONTACT.INI</div>
+                
+                <div class="contact-grid">
+                    <div class="contact-item" onclick="window.open('mailto:dhruvbajaj789@gmail.com')">
+                        <div style="font-size: 24px; margin-bottom: 10px;">📧</div>
+                        <div>Email</div>
+                        <div style="font-size: 12px; color: var(--cyan);">dhruvbajaj789@gmail.com</div>
+                    </div>
+                    
+                    <div class="contact-item" onclick="window.open('tel:+918003605638')">
+                        <div style="font-size: 24px; margin-bottom: 10px;">📱</div>
+                        <div>Phone</div>
+                        <div style="font-size: 12px; color: var(--cyan);">+91 8003605638</div>
+                    </div>
+                    
+                    <div class="contact-item" onclick="window.open('https://www.linkedin.com/in/dhruv-bajaj-10ab42242/')">
+                        <div style="font-size: 24px; margin-bottom: 10px;">💼</div>
+                        <div>LinkedIn</div>
+                        <div style="font-size: 12px; color: var(--cyan);">dhruv-bajaj-10ab42242</div>
+                    </div>
+                    
+                    <div class="contact-item" onclick="window.open('https://github.com/Dhruv-Bajaj-code')">
+                        <div style="font-size: 24px; margin-bottom: 10px;">💻</div>
+                        <div>GitHub</div>
+                        <div style="font-size: 12px; color: var(--cyan);">Dhruv-Bajaj-code</div>
+                    </div>
+                    
+                    <div class="contact-item" onclick="window.open('https://leetcode.com/u/dhruvbajaj/')">
+                        <div style="font-size: 24px; margin-bottom: 10px;">🧮</div>
+                        <div>LeetCode</div>
+                        <div style="font-size: 12px; color: var(--cyan);">dhruvbajaj</div>
+                    </div>
+                </div>
+            </div>
+
+            <div id="awards-content" style="display: none;">
+                <div class="section-header">&gt;&gt;&gt; AWARDS.LOG</div>
+                
+                <div class="award-badge">
+                    🎯 Featured in ParadeDB's 2025 Roadmap
+                </div>
+                <div class="content-section">
+                    <div class="terminal-prompt">&gt; achievement_details --parade-db</div>
+                    <div class="achievement">Built and open-sourced a custom Django integration enabling BM25 ranking, vector search, and full-text search in Django apps</div>
+                    <div class="achievement">Gained community recognition and featured in official discussions</div>
+                    <p style="margin-top: 10px; color: var(--cyan);">🔗 <a href="#" style="color: var(--cyan);">Discussion</a> | <a href="#" style="color: var(--cyan);">Code Repository</a></p>
+                </div>
+
+                <div class="award-badge">
+                    🏆 Finalist - Code4Change Hackathon 2024
+                </div>
+                <div class="content-section">
+                    <div class="terminal-prompt">&gt; hackathon_details --code4change</div>
+                    <div class="achievement">Led a team to build an innovative Udemy-style learning platform with integrated AI-powered chatbot for personalized course recommendations</div>
+                </div>
+
+                <div class="award-badge">
+                    ☁️ 2x AWS Certified
+                </div>
+                <div class="content-section">
+                    <div class="terminal-prompt">&gt; certifications --aws</div>
+                    <div class="achievement">AWS Solutions Architect - Associate</div>
+                    <div class="achievement">AWS Cloud Practitioner</div>
+                    <div class="achievement">Validated expertise in cloud architecture, cost optimization, and designing scalable AWS solutions</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global variables
+        let openWindows = ['about-window'];
+        let activeWindow = 'about-window';
+        let currentSection = 'about';
+        let terminalHistory = [];
+        let historyIndex = -1;
+
+        // Window icons mapping
+        const windowIcons = {
+            'about-window': { icon: '👨‍💻', label: 'About.exe' },
+            'experience-window': { icon: '💼', label: 'Experience.exe' },
+            'projects-window': { icon: '🛠️', label: 'Projects.exe' },
+            'skills-window': { icon: '⚡', label: 'Skills.exe' },
+            'contact-window': { icon: '📧', label: 'Contact.exe' },
+            'awards-window': { icon: '🏆', label: 'Awards.exe' }
+        };
+
+        // Initialize the desktop
+        function initializeDesktop() {
+            updateClock();
+            setInterval(updateClock, 1000);
+            updateTaskbar();
+            updateDesktopIcons();
+            initMatrixBackground();
+            positionWindow('about-window');
+        }
+
+        // Update clock
+        function updateClock() {
+            const now = new Date();
+            const timeString = now.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+            document.getElementById('taskbar-clock').textContent = timeString;
+            
+            const statusTime = now.toLocaleTimeString();
+            document.querySelector('.status-bar span').innerHTML = 
+                `Dhruv Bajaj Portfolio System | Status: Online | Memory: 640K | CPU: 100% | ${statusTime}`;
+        }
+
+        // Update taskbar buttons
+        function updateTaskbar() {
+            const taskbarButtons = document.getElementById('taskbar-buttons');
+            taskbarButtons.innerHTML = '';
+            
+            openWindows.forEach(windowId => {
+                const button = document.createElement('button');
+                button.className = `taskbar-button ${windowId === activeWindow ? 'active' : ''}`;
+                button.textContent = windowIcons[windowId].label;
+                button.onclick = () => switchWindow(windowId);
+                taskbarButtons.appendChild(button);
+            });
+        }
+
+        // Update desktop icons
+        function updateDesktopIcons() {
+            const desktop = document.getElementById('desktop');
+            desktop.innerHTML = '';
+            
+            openWindows.forEach(windowId => {
+                const iconData = windowIcons[windowId];
+                const icon = document.createElement('div');
+                icon.className = 'desktop-icon';
+                icon.onclick = () => switchWindow(windowId);
+                
+                icon.innerHTML = `
+                    <div class="icon-image">${iconData.icon}</div>
+                    <div class="icon-label">${iconData.label}</div>
+                `;
+                
+                desktop.appendChild(icon);
+            });
+        }
+
+        // Switch between windows
+        function switchWindow(windowId) {
+            // Hide all windows
+            document.querySelectorAll('.window').forEach(w => {
+                w.classList.remove('active');
+                w.style.display = 'none';
+            });
+            
+            // Show target window
+            const targetWindow = document.getElementById(windowId);
+            if (targetWindow) {
+                targetWindow.classList.add('active');
+                targetWindow.style.display = 'block';
+                activeWindow = windowId;
+                updateTaskbar();
+                
+                // Add glitch effect
+                targetWindow.classList.add('glitch');
+                setTimeout(() => targetWindow.classList.remove('glitch'), 300);
+            }
+        }
+
+        // Switch between sections
+        function switchSection(section) {
+            // Hide all content sections
+            document.querySelectorAll('[id$="-content"]').forEach(content => {
+                content.style.display = 'none';
+            });
+            
+            // Show target section
+            document.getElementById(`${section}-content`).style.display = 'block';
+            
+            // Update navigation buttons
+            document.querySelectorAll('.nav-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            event.target.classList.add('active');
+            
+            currentSection = section;
+        }
+
+        // Window controls
+        function minimizeWindow(windowId) {
+            document.getElementById(windowId).style.display = 'none';
+            // Note: Window stays in taskbar and desktop icons
+        }
+
+        function maximizeWindow(windowId) {
+            const window = document.getElementById(windowId);
+            if (window.style.width === '100vw') {
+                // Restore
+                window.style.width = '700px';
+                window.style.height = '500px';
+                window.style.left = '100px';
+                window.style.top = '60px';
+            } else {
+                // Maximize
+                window.style.width = '100vw';
+                window.style.height = 'calc(100vh - 65px)';
+                window.style.left = '0';
+                window.style.top = '25px';
+            }
+        }
+
+        function closeWindow(windowId) {
+            // Add close animation
+            const window = document.getElementById(windowId);
+            window.classList.add('glitch');
+            
+            setTimeout(() => {
+                window.style.display = 'none';
+                window.classList.remove('active');
+                
+                // Remove from open windows
+                openWindows = openWindows.filter(id => id !== windowId);
+                
+                // Switch to another window or show desktop
+                if (openWindows.length > 0) {
+                    switchWindow(openWindows[0]);
+                } else {
+                    activeWindow = null;
+                }
+                
+                updateTaskbar();
+                updateDesktopIcons();
+            }, 300);
+        }
+
+        // Position windows randomly
+        function positionWindow(windowId) {
+            const window = document.getElementById(windowId);
+            const maxX = Math.max(50, window.innerWidth - 700);
+            const maxY = Math.max(60, window.innerHeight - 500);
+            
+            const x = Math.random() * (maxX - 50) + 50;
+            const y = Math.random() * (maxY - 60) + 60;
+            
+            window.style.left = `${x}px`;
+            window.style.top = `${y}px`;
+        }
+
+        // Terminal functionality
+        function handleTerminalInput(event) {
+            if (event.key === 'Enter') {
+                const input = event.target.value.trim();
+                const output = document.getElementById('terminal-output');
+                
+                // Add command to output
+                const commandDiv = document.createElement('div');
+                commandDiv.innerHTML = `<span class="terminal-prompt">&gt; ${input}</span>`;
+                output.appendChild(commandDiv);
+                
+                // Process command
+                const response = processTerminalCommand(input);
+                const responseDiv = document.createElement('div');
+                responseDiv.innerHTML = response;
+                output.appendChild(responseDiv);
+                
+                // Add to history
+                if (input) {
+                    terminalHistory.unshift(input);
+                    historyIndex = -1;
+                }
+                
+                // Clear input
+                event.target.value = '';
+                
+                // Scroll to bottom
+                output.scrollTop = output.scrollHeight;
+            } else if (event.key === 'ArrowUp') {
+                // Navigate history up
+                if (historyIndex < terminalHistory.length - 1) {
+                    historyIndex++;
+                    event.target.value = terminalHistory[historyIndex];
+                }
+            } else if (event.key === 'ArrowDown') {
+                // Navigate history down
+                if (historyIndex > 0) {
+                    historyIndex--;
+                    event.target.value = terminalHistory[historyIndex];
+                } else if (historyIndex === 0) {
+                    historyIndex = -1;
+                    event.target.value = '';
+                }
+            }
+        }
+
+        // Process terminal commands
+        function processTerminalCommand(command) {
+            const cmd = command.toLowerCase();
+            
+            switch (cmd) {
+                case 'help':
+                    return `Available commands:<br>
+                    • dir - List available sections<br>
+                    • whoami - Display bio information<br>
+                    • clear - Clear terminal output<br>
+                    • matrix - Toggle matrix background<br>
+                    • easteregg - Show hidden message<br>
+                    • time - Display current time<br>
+                    • skills - List technical skills<br>
+                    • contact - Display contact information`;
+                
+                case 'dir':
+                    return `Directory listing:<br>
+                    📁 about.exe<br>
+                    📁 experience.exe<br>
+                    📁 projects.exe<br>
+                    📁 skills.exe<br>
+                    📁 contact.exe<br>
+                    📁 awards.exe<br>
+                    <br>6 File(s) | 0 bytes free`;
+                
+                case 'whoami':
+                    return `USER: Dhruv Bajaj<br>
+                    ROLE: Full-Stack Developer<br>
+                    STATUS: Available for opportunities<br>
+                    LOCATION: India<br>
+                    SPECIALIZATION: Backend systems, Cloud architecture, IoT`;
+                
+                case 'clear':
+                    document.getElementById('terminal-output').innerHTML = 
+                        '<div class="terminal-prompt">Terminal cleared. Type \'help\' for available commands.</div>';
+                    return '';
+                
+                case 'matrix':
+                    toggleMatrix();
+                    return 'Matrix background intensity toggled.';
+                
+                case 'easteregg':
+                    return `<div style="color: #ff0000;">
+                    ╔═══════════════════════════════════════╗<br>
+                    ║    🚀 CONGRATULATIONS! 🚀           ║<br>
+                    ║  You found the hidden easter egg!    ║<br>
+                    ║     Thanks for exploring! 🎮         ║<br>
+                    ╚═══════════════════════════════════════╝
+                    </div>`;
+                
+                case 'time':
+                    return `Current system time: ${new Date().toLocaleString()}`;
+                
+                case 'skills':
+                    return `Technical Skills Summary:<br>
+                    • Languages: Python, JavaScript, Java, SQL, Go<br>
+                    • Backend: FastAPI, Django, Express.js<br>
+                    • Frontend: React.js, AngularJS<br>
+                    • Cloud: AWS (EC2, S3, Lambda, DynamoDB)<br>
+                    • Databases: MySQL, PostgreSQL, MongoDB, Redis`;
+                
+                case 'contact':
+                    return `Contact Information:<br>
+                    📧 Email: dhruvbajaj789@gmail.com<br>
+                    📱 Phone: +91 8003605638<br>
+                    💼 LinkedIn: dhruv-bajaj-10ab42242<br>
+                    💻 GitHub: Dhruv-Bajaj-code<br>
+                    🧮 LeetCode: dhruvbajaj`;
+                
+                default:
+                    return `'${command}' is not recognized as an internal or external command.<br>Type 'help' for available commands.`;
+            }
+        }
+
+        // Matrix background
+        function initMatrixBackground() {
+            const canvas = document.getElementById('matrix-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+            
+            const matrix = "ABCDEFGHIJKLMNOPQRSTUVWXYZ123456789@#$%^&*()*&^%+-/~{[|`]}";
+            const matrixArray = matrix.split("");
+            
+            const fontSize = 10;
+            const columns = canvas.width / fontSize;
+            const drops = [];
+            
+            for (let x = 0; x < columns; x++) {
+                drops[x] = 1;
+            }
+            
+            function draw() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.04)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                ctx.fillStyle = '#00ff00';
+                ctx.font = fontSize + 'px monospace';
+                
+                for (let i = 0; i < drops.length; i++) {
+                    const text = matrixArray[Math.floor(Math.random() * matrixArray.length)];
+                    ctx.fillText(text, i * fontSize, drops[i] * fontSize);
+                    
+                    if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
+                        drops[i] = 0;
+                    }
+                    drops[i]++;
+                }
+            }
+            
+            setInterval(draw, 35);
+            
+            window.addEventListener('resize', () => {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            });
+        }
+
+        // Toggle matrix intensity
+        function toggleMatrix() {
+            const canvas = document.getElementById('matrix-canvas');
+            canvas.style.opacity = canvas.style.opacity === '0.3' ? '0.1' : '0.3';
+        }
+
+        // Start button functionality
+        function showStart() {
+            // Add a simple start menu effect
+            const startButton = document.querySelector('.start-button');
+            startButton.style.transform = 'scale(0.95)';
+            setTimeout(() => {
+                startButton.style.transform = 'scale(1)';
+            }, 100);
+        }
+
+        // Make windows draggable
+        function makeDraggable() {
+            const windows = document.querySelectorAll('.window');
+            windows.forEach(windowElement => {
+                const header = windowElement.querySelector('.window-header');
+                let isDragging = false;
+                let currentX;
+                let currentY;
+                let initialX;
+                let initialY;
+                let xOffset = 0;
+                let yOffset = 0;
+
+                header.addEventListener('mousedown', dragStart);
+                document.addEventListener('mousemove', drag);
+                document.addEventListener('mouseup', dragEnd);
+
+                function dragStart(e) {
+                    if (e.target.classList.contains('window-control')) return;
+                    
+                    initialX = e.clientX - xOffset;
+                    initialY = e.clientY - yOffset;
+
+                    if (e.target === header) {
+                        isDragging = true;
+                    }
+                }
+
+                function drag(e) {
+                    if (isDragging) {
+                        e.preventDefault();
+                        currentX = e.clientX - initialX;
+                        currentY = e.clientY - initialY;
+                        xOffset = currentX;
+                        yOffset = currentY;
+
+                        windowElement.style.left = currentX + 'px';
+                        windowElement.style.top = Math.max(25, currentY) + 'px';
+                    }
+                }
+
+                function dragEnd() {
+                    isDragging = false;
+                }
+            });
+        }
+
+        // Initialize everything when the page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeDesktop();
+            makeDraggable();
+            
+            // Focus terminal input
+            document.getElementById('terminal-input').focus();
+        });
+
+        // Handle window resize
+        window.addEventListener('resize', () => {
+            // Reposition windows if they're outside viewport
+            document.querySelectorAll('.window').forEach(window => {
+                const rect = window.getBoundingClientRect();
+                if (rect.left < 0) window.style.left = '10px';
+                if (rect.top < 25) window.style.top = '35px';
+                if (rect.right > window.innerWidth) {
+                    window.style.left = (window.innerWidth - rect.width - 10) + 'px';
+                }
+            });
+        });
+    </script>
+</body>
 </html>
