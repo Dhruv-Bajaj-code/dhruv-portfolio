@@ -191,20 +191,24 @@ const Sidebar = React.forwardRef<
     }
 
     if (isMobile) {
+      const contentRef = React.useRef<HTMLDivElement>(null);
+      React.useEffect(() => {
+        if (openMobile && contentRef.current) {
+          contentRef.current.scrollTop = 0;
+        }
+      }, [openMobile]);
       return (
         <Sheet open={openMobile} onOpenChange={setOpenMobile} {...props}>
           <SheetContent
             data-sidebar="sidebar"
             data-mobile="true"
             className="w-[--sidebar-width] bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden"
-            style={
-              {
-                "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
-              } as React.CSSProperties
-            }
+            style={{
+              "--sidebar-width": SIDEBAR_WIDTH_MOBILE,
+            } as React.CSSProperties}
             side={side}
           >
-            <div className="flex h-full w-full flex-col">{children}</div>
+            <div ref={contentRef} className="flex h-full w-full flex-col overflow-auto">{children}</div>
           </SheetContent>
         </Sheet>
       )
